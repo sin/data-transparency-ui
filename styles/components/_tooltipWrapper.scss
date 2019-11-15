@@ -28,6 +28,7 @@
             position: relative;
             @import "../shared/arrow";
             $color-tooltip-border: $color-gray-light;
+            @import "../shared/arrow";
             .tooltip-pointer {
                 // override the coloring
                 &:after {
