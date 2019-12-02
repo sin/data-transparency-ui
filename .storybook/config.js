@@ -88,7 +88,7 @@ addParameters({
   options: {
     name: 'Data Transparency UI',
     // theme: dataTransparencyUiTheme
-    storySort: (a, b) => {
+    storySort: function(a, b) {
       const [className, obj] = a;
       const [className2, obj2] = b;
       if (obj.kind === 'Introduction') return -1;
@@ -103,8 +103,14 @@ addParameters({
 });
 
 addDecorator(
-  (storyFn) => <div style={{ textAlign: "center",  width: "100%" }}>{storyFn()}</div>,
-  (storyFn, context) => withConsole()(storyFn)(context)
+  function(storyFn) {
+    return (
+      <div style={{ textAlign: "center",  width: "100%" }}>{storyFn()}</div>
+    );
+  },
+  function (storyFn, context) {
+    return withConsole()(storyFn)(context)
+  }
 );
 
 configure(require.context('./stories', true, /\.stories\.js$|mdx$/), module);

@@ -2,7 +2,7 @@ const path = require('path');
 const createCompiler = require('@storybook/addon-docs/mdx-compiler-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-module.exports = async ({ config, mode }) => {
+module.exports = function ({ config, mode }) {
   config.resolve = {
     ...config.resolve,
     extensions: [
@@ -20,27 +20,41 @@ module.exports = async ({ config, mode }) => {
       {
         test: /\.scss$/,
         use: [
-            { loader: MiniCssExtractPlugin.loader },
-            { loader: "css-loader", options: { url: false, sourceMap: true } },
-            {
-              loader: "postcss-loader",
-              options: {
-                sourceMap: true,
-                indent: 'postcss',
-                plugins: [require('autoprefixer')],
-                config: {
-                  path: path.resolve(__dirname, "../postcss.config.js")
-                }
+          { loader: MiniCssExtractPlugin.loader },
+          { loader: "css-loader", options: { url: false, sourceMap: true } },
+          {
+            loader: "postcss-loader",
+            options: {
+              sourceMap: true,
+              indent: 'postcss',
+              plugins: [require('autoprefixer')],
+              config: {
+                path: path.resolve(__dirname, "../postcss.config.js")
               }
-            },
-            {
-                loader: "sass-loader",
-                options: {
-                    sourceMap: true
-                }
             }
-          ]
-        },
+          },
+          {
+              loader: "sass-loader",
+              options: {
+                  sourceMap: true
+              }
+          }
+        ]
+      },
+      {
+        // Loads storybook in IE11;
+        // Hack until 5.3 release: https://github.com/storybookjs/storybook/issues/8884
+        test: /\.js$/,
+        include: /node_modules\/acorn-jsx/,
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              presets: [[require.resolve('@babel/preset-env'), { modules: 'commonjs' }]],
+            },
+          },
+        ],
+      },
       {
         test: /\.(stories|story)\.mdx$/,
         use: [
